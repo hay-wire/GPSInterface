@@ -18,7 +18,7 @@ exports.deviceType = "gt02a";	// must be same as file name
 
 
 /*
- *	@params: usage: must have a name to identify signature
+ *	@params: name: optional name to identify fxns
  *	@params: regex: must have a regex to match the data to
  *	@resolve: a method with 2 arguments data, dataArr
  *			data: the data received from devices in socket.on('data', function(data) {..}) method
@@ -26,14 +26,14 @@ exports.deviceType = "gt02a";	// must be same as file name
  */
 
 exports.availableFxns = [
-	{	usage: "lat-longs",
+	{	name: "lat-longs",
 		regex: /ss/,
 		resolve:  function(data, dataArr) {
 			console.log("gt02a: lat-longs: array is: ", dataArr);
 			return dataArr.toString();
 		}
 	},
-	{	usage: "keep-alive",
+	{	name: "keep-alive",
 		regex: /ss/,
 		resolve: function(data, dataArr) {
 			console.log("gt02a: keep-alive: is: ", dataArr);
