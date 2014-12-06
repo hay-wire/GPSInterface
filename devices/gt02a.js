@@ -28,7 +28,7 @@ exports.deviceType = "gt02a";	// must be same as file name
 
 exports.availableFxns = [
 	{	name: "gt02a:BR00",
-		regex: new RegExp(/\(([0-9]+)(BR00)([^A-Z]+)(A)([0-9]{2})([0-9\.]+)([NS])([0-9]{3})([0-9\.]+)([EW])([0-9\.]{9})([0-9\.]{12})[0-9]+([L])([0-9]+)\)\s*\r*\n*/g),
+		regex: new RegExp(/\(([0-9]+)(BR00)([^A-Z]+)(A)([0-9]{2})([0-9\.]+)([NS])([0-9]{3})([0-9\.]+)([EW])([0-9\.]{9})([0-9\.]{12})[0-9]+([L])([0-9]+)\)\s*\r*\n*/),
 		resolve:  function(data, execRes) {
 			// for data:
 			// 		(027042573071BR00141206A1904.6176N07250.8073E002.50952072.730000000000L00000000)
@@ -57,7 +57,7 @@ exports.availableFxns = [
 			//"gpsUid=%s&msgType=locationUpdate&loc=[%s,%s]&speed=%s&direction=%s",
 			// deviceId, latitude, longitude, speed, direction)
 			var httpRes =
-				  'gpsUid=' + execArr[1]
+				  'gpsUid=' + execRes[1]
 				+ '&msgType=locationUpdate'
 				+ '&loc=['+ lat+','+ lng+']'
 				+ '&speed='+ execRes[11]
@@ -68,7 +68,7 @@ exports.availableFxns = [
 		}
 	},
 	{	name: "gt02a:BP00",
-		regex: new RegExp(/\(([0-9]+)(BP00)([0-9]+)(HSO)\)\s*\r*\n*/g),
+		regex: new RegExp(/\(([0-9]+)(BP00)([0-9]+)(HSO)\)\s*\r*\n*/),
 		resolve: function(data, execRes) {
 			// for data:
 			//		(027042573071BP00000027042573071HSO)
