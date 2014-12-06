@@ -3,6 +3,7 @@
  */
 'use strict';
 var net = require('net');
+var http = require('http');
 var dataParser = require('./dataParser');
 
 var PORT = 7018;
@@ -52,10 +53,23 @@ net.createServer(function(sock) {
 		if(sock.deviceType) {
 			console.log("Device type has been identified as: ", typeof sock.deviceType, sock.deviceType);
 			var res = dataParser.parse(sock.deviceType, data);
-			console.log('DATA: ' + sock.remoteAddress + ': ' + data);
+			if(!res.err) {
+				if(res.httpRes) {
+					http.get('http://localhost:3000/gps/update/car?'+res.httpRes, function(res) {
+						console.log("Http Got response: " + res.statusCode);
+					}).on('error', function(e) {
+						console.log("Http Got error: " + e.message);
+					});
+				}
+				if(res.deviceRes) {
+					sock.write(res.deviceRes);
+				}
+			}
+			else {
+				console.log('ERR_DATAPARSE');
+				sock.write('ERR_DATAPARSE');
+			}
 			console.log('RES: ', res);
-			// Write the data back to the socket, the client will receive it as data from the server
-			sock.write(res);
 		}
 		else {
 			console.log('Unreachable code reached!!! ');
