@@ -8,24 +8,36 @@
 
 		Keep Alive:
 
+		All drivers must have the following format.
+		and
+
  */
 
 
 exports.deviceType = "gt02a";	// must be same as file name
 
+
+/*
+ *	@params: usage: must have a name to identify signature
+ *	@params: regex: must have a regex to match the data to
+ *	@resolve: a method with 2 arguments data, dataArr
+ *			data: the data received from devices in socket.on('data', function(data) {..}) method
+ *			dataArr: (optional) is the object returned after executing : data.match(regex)
+ */
+
 exports.availableFxns = [
 	{	usage: "lat-longs",
 		regex: /ss/,
-		resolve:  function(dataArr) {
-			console.log("gt02a: lat-longs : array is: ", dataArr);
-			return dataArr;
+		resolve:  function(data, dataArr) {
+			console.log("gt02a: lat-longs: array is: ", dataArr);
+			return dataArr.toString();
 		}
 	},
 	{	usage: "keep-alive",
 		regex: /ss/,
-		resolve: function() {
-			console.log("data array is: ", dataArr);
-			return dataArr;
+		resolve: function(data, dataArr) {
+			console.log("gt02a: keep-alive: is: ", dataArr);
+			return dataArr.toString();
 		}
 	}
 ];
