@@ -6,18 +6,18 @@ var Devices = require('./devices');
 
 exports.parse = function(device, data) {
 
-	console.log("Parse: 1. Using device: ", device);
+	//console.log("Parse: 1. Using device: ", device);
 	var dev = Devices[device];
 	for(var i=0; i<dev.availableFxns.length; i++) {
 		var fxn = dev.availableFxns[i];
 		data = data.toString().trim();
-		console.log("Parse: 2. Matching for Signature: ", fxn.name, " for data: ", typeof data, data);
+		//console.log("Parse: 2. Matching for Signature: ", fxn.name, " for data: ", typeof data, data);
 		var resArray = fxn.regex.exec(data);
-		console.log("Parse 3: Match result: ", resArray);
+		//console.log("Parse 3: Match result: ", resArray);
 		if(resArray && resArray.length) {
-			console.log("Parse 4: Resolving against Device: ", dev.deviceType, " Signature: ", fxn.name);
+			//console.log("Parse 4: Resolving against Device: ", dev.deviceType, " Signature: ", fxn.name);
 			var res = fxn.resolve(data, resArray);
-			console.log("Parse 5: Resolved result: ", typeof res, res);
+			//console.log("Parse 5: Resolved result: ", typeof res, res);
 			return res;
 		}
 	}
@@ -33,11 +33,11 @@ exports.identifyDeviceType = function(data) {
 		for(var i=0; i<dev.availableFxns.length; i++) {
 			var fxn = dev.availableFxns[i];
 			data = data.toString().trim();
-			console.log("Identify: 1. Matching regex for ", fxn.name);
+			//console.log("Identify: 1. Matching regex for ", fxn.name);
 			var resArray = fxn.regex.exec(data);
-			console.log("Identify: 2. Match result: ", resArray);
+			//console.log("Identify: 2. Match result: ", resArray);
 			if(resArray && resArray.length) {
-				console.log("Identify: 3. New Device: ", dev.deviceType, "matches name: ", fxn.name);
+				//console.log("Identify: 3. New Device: ", dev.deviceType, "matches name: ", fxn.name);
 				return dev.deviceType;
 			}
 		}

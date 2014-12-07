@@ -10,6 +10,22 @@ var PORT = 7018;
 var clientsCount = 0;
 var clients = {};
 
+
+/* make console.log write to a debug file as well */
+var fs = require('fs');
+var util = require('util');
+var time = (new Date()).getTime();
+var log_file = fs.createWriteStream(__dirname + '/logs/debug-'+time+'.log', {flags : 'w'});
+var log_stdout = process.stdout;
+
+console.log = function(d) { //
+	log_file.write(util.format(d) + '\n');
+	log_stdout.write(util.format(d) + '\n');
+};
+
+
+
+
 // Create a server instance, and chain the listen function to it
 // The function passed to net.createServer() becomes the event handler for the 'connection' event
 // The sock object the callback function receives UNIQUE for each connection
@@ -51,7 +67,7 @@ net.createServer(function(sock) {
 		// device has been already identified. process the data
 
 		if(sock.deviceType) {
-			console.log("Device type has been identified as: ", typeof sock.deviceType, sock.deviceType);
+			console.log("Device Identified As: ", typeof sock.deviceType, sock.deviceType);
 			var res = dataParser.parse(sock.deviceType, data);
 			if(!res.err) {
 				if(res.httpRes) {
@@ -63,10 +79,10 @@ net.createServer(function(sock) {
 					};
 
 					var httpReq = http.request(options, function(res) {
-						console.log("Http Got response: " + res.statusCode);
+						console.log("Http Response: " + res.statusCode);
 					});
 					httpReq.on('error', function(e) {
-						console.log("Http Got error: " + e.message);
+						console.log("Http Error ");
 					});
 					httpReq.setHeader('Content-Length', res.httpRes.length);
 					httpReq.setHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -83,7 +99,7 @@ net.createServer(function(sock) {
 				console.log('ERR_DATAPARSE');
 				sock.write('ERR_DATAPARSE');
 			}
-			console.log('RES: ', res);
+			//console.log('RES: ', res);
 		}
 		else {
 			console.log('Unreachable code reached!!! ');
