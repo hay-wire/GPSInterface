@@ -61,8 +61,9 @@ exports.availableFxns = [
 				+ '&msgType=locationUpdate'
 				+ '&loc=['+ lat+','+ lng+']'
 				+ '&speed='+ execRes[11]
-				+ '&direction='+ execRes[12];
+				+ '&direction='+ execRes[12]
 
+				+ '&ctime='+ execRes[3];
 			console.log("gt02a:BP00: httpRes is: ", httpRes);
 			return { err: null, httpRes: httpRes, deviceRes: null };
 		}
