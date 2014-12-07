@@ -17,7 +17,7 @@ exports.parse = function(device, data) {
 		if(resArray && resArray.length) {
 			//console.log("Parse 4: Resolving against Device: ", dev.deviceType, " Signature: ", fxn.name);
 			var res = fxn.resolve(data, resArray);
-			//console.log("Parse 5: Resolved result: ", typeof res, res);
+			debug.log("Parse 5: Resolved result: ", typeof res, res);
 			return res;
 		}
 	}

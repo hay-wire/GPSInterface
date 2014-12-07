@@ -1,3 +1,4 @@
 npm-debug.log
 npm_modules/
 .idea/
+logs/*.log

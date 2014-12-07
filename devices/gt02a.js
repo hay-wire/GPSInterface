@@ -63,9 +63,10 @@ exports.availableFxns = [
 				+ '&loc=['+ lat+','+ lng+']'
 				+ '&speed='+ execRes[11]
 				+ '&direction='+ execRes[12]
-				+ '&ctime='+ execRes[3];
+				+ '&ctime='+ ctime;
 
 			console.log("gt02a:BP00: httpRes is: ", httpRes);
+			debug.log("gt02a:BP00: httpRes is: ", httpRes);
 			return { err: null, httpRes: httpRes, deviceRes: null };
 		}
 	},
@@ -84,6 +85,7 @@ exports.availableFxns = [
 			//
 			var deviceRes = '(' + execRes[1] + 'AP01HSO)';
 			console.log("gt02a:BP00: deviceRes is ", deviceRes);
+			debug.log("gt02a:BP00: deviceRes is ", deviceRes);
 			return { err: null, httpRes: null, deviceRes: deviceRes }
 		}
 	}

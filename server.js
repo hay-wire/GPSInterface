@@ -1,7 +1,7 @@
 /**
  * Created by haywire on 12/6/14.
  */
-'use strict';
+//'use strict';
 var net = require('net');
 var http = require('http');
 var dataParser = require('./dataParser');
@@ -14,13 +14,13 @@ var clients = {};
 /* make console.log write to a debug file as well */
 var fs = require('fs');
 var util = require('util');
-var time = (new Date()).getTime();
-var log_file = fs.createWriteStream(__dirname + '/logs/debug-'+time+'.log', {flags : 'w'});
+var log_file = fs.createWriteStream(__dirname + '/logs/debug.log', {flags : 'a'});
 var log_stdout = process.stdout;
 
-console.log = function(d) { //
-	log_file.write(util.format(d) + '\n');
-	log_stdout.write(util.format(d) + '\n');
+debug = {};
+debug.log = function(d) {
+	delete arguments['0']; // remove the first argument. its already in d
+	log_file.write((new Date()).toString() + ':  ' +util.format(d) + ' ' + JSON.stringify(arguments) + '\n');
 };
 
 
@@ -29,7 +29,7 @@ console.log = function(d) { //
 // Create a server instance, and chain the listen function to it
 // The function passed to net.createServer() becomes the event handler for the 'connection' event
 // The sock object the callback function receives UNIQUE for each connection
-net.createServer(function(sock) {
+var server = net.createServer(function(sock) {
 
 	// We have a connection - a socket object is assigned to the connection automatically
 	console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort + ' clients: ' + ++clientsCount);
@@ -49,6 +49,7 @@ net.createServer(function(sock) {
 			else {
 				// max tries exhausted.
 				sock.write('CLOSE_MAX_TRY');
+				debug.log(sock.remoteAddress +' '+ sock.remotePort  +' CLOSE_MAX_TRY');
 				console.log('CLOSE_MAX_TRY');
 				sock.destroy();
 				return;
@@ -59,6 +60,7 @@ net.createServer(function(sock) {
 			}
 			else {
 				console.log('UNKNOWN_DEVICE');
+				debug.log(sock.remoteAddress +' '+ sock.remotePort  +' UNKNOWN_DEVICE');
 				sock.write('UNKNOWN_DEVICE');
 				return;
 			}
@@ -68,6 +70,7 @@ net.createServer(function(sock) {
 
 		if(sock.deviceType) {
 			console.log("Device Identified As: ", typeof sock.deviceType, sock.deviceType);
+			debug.log("Device Identified As: ", typeof sock.deviceType, sock.deviceType);
 			var res = dataParser.parse(sock.deviceType, data);
 			if(!res.err) {
 				if(res.httpRes) {
@@ -80,9 +83,12 @@ net.createServer(function(sock) {
 
 					var httpReq = http.request(options, function(res) {
 						console.log("Http Response: " + res.statusCode);
+						debug.log("Http Error ", res.statusCode)
 					});
 					httpReq.on('error', function(e) {
 						console.log("Http Error ");
+						debug.log("Http Error ", e);
+
 					});
 					httpReq.setHeader('Content-Length', res.httpRes.length);
 					httpReq.setHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -97,12 +103,14 @@ net.createServer(function(sock) {
 			}
 			else {
 				console.log('ERR_DATAPARSE');
+				debug.log('ERR_DATAPARSE : '+res.err);
 				sock.write('ERR_DATAPARSE');
 			}
 			//console.log('RES: ', res);
 		}
 		else {
 			console.log('Unreachable code reached!!! ');
+			debug.log('Unreachable code reached');
 		}
 
 	});
@@ -111,9 +119,16 @@ net.createServer(function(sock) {
 	sock.on('close', function(data) {
 		--clientsCount;
 		console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort  + ' clients: ' + clientsCount);
+		debug.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort  + ' clients: ' + clientsCount);
+
 	});
 
-}).listen(PORT, function() {
+});
+console.log("Max connections are: ", server.maxConnections);
+server.maxConnection = 1024;
+server.listen(PORT, function() {
+	console.log("Max connections are: ", server.maxConnections);
 	console.log('GPS Interface listening on :'+ PORT);
+	debug.log('GPS Interface listening on :'+ PORT);
 });
 
