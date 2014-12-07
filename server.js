@@ -20,7 +20,9 @@ var log_stdout = process.stdout;
 debug = {};
 debug.log = function(d) {
 	delete arguments['0']; // remove the first argument. its already in d
-	log_file.write((new Date()).toString() + ':  ' +util.format(d) + ' ' + JSON.stringify(arguments) + '\n');
+	var addInfo = (JSON.stringify(arguments));
+	(!arguments[1]) ?  (addInfo = '')  : null;
+	log_file.write((new Date()).toString() + ':  ' +util.format(d) + ' ' + addInfo + '\n');
 };
 
 
@@ -40,6 +42,7 @@ var server = net.createServer(function(sock) {
 	sock.on('data', function(data) {
 
 
+		debug.log('Data:'+sock.remoteAddress +':'+ sock.remotePort + ': ' + data.toString().trim());
 		if(!sock.deviceType) {
 			// We try to identify device for max 10 times.
 			if( sock.identifyTries < 3) {
@@ -55,7 +58,6 @@ var server = net.createServer(function(sock) {
 				return;
 			}
 			if(sock.deviceType !== false) {
-				console.log("device type is: ", sock.deviceType);
 				sock.identifyTries = 0;
 			}
 			else {
@@ -69,8 +71,8 @@ var server = net.createServer(function(sock) {
 		// device has been already identified. process the data
 
 		if(sock.deviceType) {
-			console.log("Device Identified As: ", typeof sock.deviceType, sock.deviceType);
-			debug.log("Device Identified As: ", typeof sock.deviceType, sock.deviceType);
+			console.log("Device Identified As: " + sock.remoteAddress +' '+ sock.remotePort + ': ', typeof sock.deviceType, sock.deviceType);
+			debug.log("Device Identified As: " + sock.remoteAddress +' '+ sock.remotePort + ': ', typeof sock.deviceType, sock.deviceType);
 			var res = dataParser.parse(sock.deviceType, data);
 			if(!res.err) {
 				if(res.httpRes) {
@@ -82,12 +84,12 @@ var server = net.createServer(function(sock) {
 					};
 
 					var httpReq = http.request(options, function(res) {
-						console.log("Http Response: " + res.statusCode);
-						debug.log("Http Error ", res.statusCode)
+						console.log("Http StatusCode: " + sock.remoteAddress +' '+ sock.remotePort + ': ' + res.statusCode);
+						debug.log("Http StatusCode: " + sock.remoteAddress +' '+ sock.remotePort + ': ', res.statusCode)
 					});
 					httpReq.on('error', function(e) {
 						console.log("Http Error ");
-						debug.log("Http Error ", e);
+						debug.log("Http Error "+ sock.remoteAddress +' '+ sock.remotePort + ': ', e);
 
 					});
 					httpReq.setHeader('Content-Length', res.httpRes.length);
@@ -103,7 +105,7 @@ var server = net.createServer(function(sock) {
 			}
 			else {
 				console.log('ERR_DATAPARSE');
-				debug.log('ERR_DATAPARSE : '+res.err);
+				debug.log('ERR_DATAPARSE : '+ sock.remoteAddress +' '+ sock.remotePort + ': '+res.err);
 				sock.write('ERR_DATAPARSE');
 			}
 			//console.log('RES: ', res);
@@ -124,10 +126,8 @@ var server = net.createServer(function(sock) {
 	});
 
 });
-console.log("Max connections are: ", server.maxConnections);
 server.maxConnection = 1024;
 server.listen(PORT, function() {
-	console.log("Max connections are: ", server.maxConnections);
 	console.log('GPS Interface listening on :'+ PORT);
 	debug.log('GPS Interface listening on :'+ PORT);
 });
