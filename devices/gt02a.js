@@ -65,8 +65,8 @@ exports.availableFxns = [
 				+ '&direction='+ execRes[12]
 				+ '&ctime='+ ctime;
 
-			console.log("gt02a:BP00: httpRes is: ", httpRes);
-			debug.log("gt02a:BP00: httpRes is: ", httpRes);
+			console.log("gt02a:BR00: httpRes is: ", httpRes);
+			debug.log("gt02a:BR00: httpRes is: ", httpRes);
 			return { err: null, httpRes: httpRes, deviceRes: null };
 		}
 	},
