@@ -55,11 +55,25 @@ net.createServer(function(sock) {
 			var res = dataParser.parse(sock.deviceType, data);
 			if(!res.err) {
 				if(res.httpRes) {
-					http.get('http://localhost:3000/gps/update/car?'+res.httpRes, function(res) {
+					var options = {
+						hostname: 'localhost',
+						port: 3000,
+						path: '/gps/update/car',
+						method: 'POST'
+					};
+
+					var httpReq = http.request(options, function(res) {
 						console.log("Http Got response: " + res.statusCode);
-					}).on('error', function(e) {
+					});
+					httpReq.on('error', function(e) {
 						console.log("Http Got error: " + e.message);
 					});
+					httpReq.setHeader('Content-Length', res.httpRes.length);
+					httpReq.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+					httpReq.write(res.httpRes);
+					httpReq.end();
+
 				}
 				if(res.deviceRes) {
 					sock.write(res.deviceRes);
