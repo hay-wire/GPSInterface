@@ -53,7 +53,7 @@ exports.availableFxns = [
 
 			var lat = (parseInt(execRes[5]) + parseFloat(execRes[6])/60) * ( (execRes[7] === "N") ? 1 : -1 );
 			var lng = (parseInt(execRes[8]) + parseFloat(execRes[9])/60) * ( (execRes[10] === "E") ? 1 : -1 );
-			var date = execRes.split(/([0-9]{2})([0-9]{2})([0-9]{2})/);
+			var date = execRes[3].split(/([0-9]{2})([0-9]{2})([0-9]{2})/);
 			var ctime = (new Date(date[2] + "-" + date[3] + "-" + date[1] )).getTime();
 			//"gpsUid=%s&msgType=locationUpdate&loc=[%s,%s]&speed=%s&direction=%s",
 			// deviceId, latitude, longitude, speed, direction)
