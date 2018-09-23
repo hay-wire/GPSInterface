@@ -6,7 +6,7 @@ var net = require('net');
 var http = require('http');
 var dataParser = require('./dataParser');
 
-var PORT = 7018;
+var PORT = process.env.PORT || 7018;
 var clientsCount = 0;
 var clients = {};
 
